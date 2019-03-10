@@ -1,4 +1,5 @@
 import math
+import random
 import sys
 import gensim
 import warnings
@@ -16,7 +17,7 @@ def main():
 	dataset=get_vectors(dataset)
 
 	# k=dataset[0]
-	# print(k.label,k.words,len(k.vectors),k.vectors[0])
+	# print(k.label,k.words,len(k.vectors),len(k.vectors[0]))
 
 
 def get_vectors(dataset):
@@ -37,7 +38,7 @@ def get_vectors(dataset):
 			wordnet_synonyms=list(set(chain.from_iterable([word.lemma_names() for word in synonyms])))
 			
 			if word in model.vocab:
-				#if word exists in word2vec
+				'''if word exists in word2vec use vector directly'''
 				dataset[sentence].vectors.append(model[word])
 
 			elif len(wordnet_synonyms)!=0:
@@ -49,11 +50,12 @@ def get_vectors(dataset):
 						dataset[sentence].vectors.append(model[i])
 						break
 			else:
-				#need to use ConceptNet
+				'''need to use ConceptNet'''
 				c+=1
 				#print(word)
+				dataset[sentence].vectors.append(random.choice(model.wv.index2entity))
 
-	print('\nun-identified words:',c,'\ntotal words:',k)
+	#print('\nun-identified words:',c,'\ntotal words:',k)
 	return dataset
 
 
