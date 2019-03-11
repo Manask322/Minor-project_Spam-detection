@@ -31,6 +31,7 @@ def get_vectors(dataset):
 	model = KeyedVectors.load_word2vec_format('GoogleNews-vectors-negative300.bin', binary=True, limit=600000)
 	c=0
 	k=0
+	flag = 1
 	for sentence in range(total_sentences):
 		for word in dataset[sentence].words:
 			k+=1
@@ -47,13 +48,14 @@ def get_vectors(dataset):
 				for i in wordnet_synonyms:
 					if i in model.vocab:
 						#use vector of similar word from wordnet
+						
 						dataset[sentence].vectors.append(model[i])
 						break
 			else:
 				'''need to use ConceptNet'''
 				c+=1
 				#print(word)
-				dataset[sentence].vectors.append(random.choice(model.wv.index2entity))
+				# dataset[sentence].vectors.append(random.choice(model.wv.index2entity))
 
 	#print('\nun-identified words:',c,'\ntotal words:',k)
 	return dataset
