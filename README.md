@@ -1,7 +1,7 @@
 # Minor-project_Spam-detection
 
 Requirements:
-1. GoogleNews-vectors-negative300.bin data file
+1. GoogleNews-vectors-negative300.bin data file (https://drive.google.com/file/d/0B7XkCwpI5KDYNlNUTTlSS21pQmM/edit)
 2. SMSSpamCollection dataset
 
 Output format:
