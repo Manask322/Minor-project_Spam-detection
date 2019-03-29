@@ -16,8 +16,8 @@ def main():
 	dataset=load_file() 
 	dataset=get_vectors(dataset)
 
-	# k=dataset[0]
-	# print(k.label,k.words,len(k.vectors),len(k.vectors[0]))
+	k=dataset[0]
+	print(k.label,k.words,len(k.vectors),len(k.vectors[0]))
 
 
 def get_vectors(dataset):
@@ -48,14 +48,14 @@ def get_vectors(dataset):
 				for i in wordnet_synonyms:
 					if i in model.vocab:
 						#use vector of similar word from wordnet
-						
 						dataset[sentence].vectors.append(model[i])
 						break
 			else:
 				'''need to use ConceptNet'''
 				c+=1
-				#print(word)
-				# dataset[sentence].vectors.append(random.choice(model.wv.index2entity))
+				# print(word)
+				dataset[sentence].vectors.append(model[random.choice(model.index2entity)])
+				# dataset[sentence].vectors.append(model[word])
 
 	#print('\nun-identified words:',c,'\ntotal words:',k)
 	return dataset
@@ -75,10 +75,9 @@ def load_file():
 			temp=SMS_data()
 			temp.label=words[0] #accessing the label of text (spam or ham)
 			temp.words=text_processing(' '.join(words[1:])) #obtaining the text as list of words
-			
 			dataset.append(temp)
-
-	return dataset
+		print(len(dataset))
+	return dataset[:2274]
 
 def text_processing(text):
 
