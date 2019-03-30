@@ -6,10 +6,11 @@ import warnings
 import re
 from itertools import chain
 warnings.filterwarnings(action='ignore', category=UserWarning, module='gensim')
- 
 from gensim.models.keyedvectors import KeyedVectors
 from nltk.corpus import wordnet
 from nltk.corpus import stopwords
+import numpy as np 
+
 
 def main():
 	
@@ -28,9 +29,22 @@ def get_vectors(dataset):
 	total_sentences=len(dataset)
 	sentences=[temp.words for temp in dataset]
 	
+	#getting word2vec vectors
 	model = KeyedVectors.load_word2vec_format('GoogleNews-vectors-negative300.bin', binary=True, limit=600000)
+	
+	
+	#getting conceptnet vectors
+	conceptnet_embeddings_index = {}
+	with open('numberbatch-en-17.06.txt', encoding='utf-8') as f:
+	    for line in f:
+	        values = line.split(' ')
+	        word = values[0]
+	        embedding = np.asarray(values[1:], dtype='float32')
+	        conceptnet_embeddings_index[word] = embedding
 	c=0
 	k=0
+	w2v=0
+	wn=0
 	for sentence in range(total_sentences):
 		for word in dataset[sentence].words:
 			k+=1
@@ -40,6 +54,7 @@ def get_vectors(dataset):
 			if word in model.vocab:
 				'''if word exists in word2vec use vector directly'''
 				dataset[sentence].vectors.append(model[word])
+				w2v+=1
 
 			elif len(wordnet_synonyms)!=0:
 				'''if word does not exist in word2vec, find synonym using wordnet'''
@@ -49,13 +64,22 @@ def get_vectors(dataset):
 						#use vector of similar word from wordnet
 						dataset[sentence].vectors.append(model[i])
 						break
-			else:
-				'''need to use ConceptNet'''
+				wn+=1
+			
+			elif word in conceptnet_embeddings_index:
+				''' if word is not in word2vec, wordnet then use conceptnet'''
 				c+=1
+				dataset[sentence].vectors.append(conceptnet_embeddings_index[word])
+
+			else:
+				'''words un-recognised are assigned random vectors from word2vec'''
+				
 				#print(word)
 				dataset[sentence].vectors.append(random.choice(model.wv.index2entity))
 
-	#print('\nun-identified words:',c,'\ntotal words:',k)
+	print('\nTotal words:',k,'\nWords recognised by Word2Vec:',w2v)
+	print('Words recognised by Wordnet:',wn,'\nWords recognised by ConceptNet:',c)
+	print('Words not recognised:',k-(w2v+wn+c))
 	return dataset
 
 
@@ -79,8 +103,8 @@ def load_file():
 	return dataset
 
 def text_processing(text):
-
-	words=re.sub('[^A-Za-z0-9]+', ' ', text) #removes special characters
+	'''removes special characters, numbers and stop words which are not of any value to the computation '''
+	words=re.sub('[^A-Za-z]+', ' ', text) #removes special characters
 	#words=re.split('(\d+)',words)
 	stop = set(stopwords.words('english'))
 	words=[i for i in words.lower().split() if i not in stop] #stop word removal
@@ -88,6 +112,7 @@ def text_processing(text):
 	return words
 
 class SMS_data:
+
 	def __init__(self):
 		self.label=None
 		self.words=None
@@ -95,3 +120,6 @@ class SMS_data:
 
 if __name__ == '__main__':
 	main()
+
+#conda install -c anaconda gensim
+#conda config --set auto_activate_base False
