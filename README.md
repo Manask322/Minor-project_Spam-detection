@@ -1,8 +1,11 @@
 # Minor-project_Spam-detection
 
 Requirements:
-1. GoogleNews-vectors-negative300.bin data file (https://drive.google.com/file/d/0B7XkCwpI5KDYNlNUTTlSS21pQmM/edit)
+1. GoogleNews-vectors-negative300.bin data file for Word2Vec
+    (https://drive.google.com/file/d/0B7XkCwpI5KDYNlNUTTlSS21pQmM/edit)
 2. SMSSpamCollection dataset
+3. numberbatch-en-17.06.txt file for ConceptNet
+    (https://github.com/commonsense/conceptnet-numberbatch)
 
 Output format:
 for each tweet(SMS_data object), following attrs exist
